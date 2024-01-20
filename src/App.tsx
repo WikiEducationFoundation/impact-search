@@ -1,10 +1,10 @@
-import "./App.css";
-import PropertySelector from "./PropertySelector";
+import "./styles/App.scss";
+import QueryBuilder from "./components/QueryBuilder";
 
 function App() {
   return (
     <>
-      <PropertySelector />
+      <QueryBuilder />
     </>
   );
 }

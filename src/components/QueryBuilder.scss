@@ -1,0 +1,53 @@
+.query-builder {
+  width: 80%;
+  margin: 0 auto;
+
+  input[type="text"] {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    font-size: 1rem;
+    color: #333;
+    background-color: #fff;
+    outline: none;
+    transition: border-color 0.3s ease;
+
+    &:focus {
+      border-color: #007bff;
+    }
+  }
+
+  select,
+  button {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    font-size: 1rem;
+    color: #333;
+    background-color: #fff;
+  }
+
+  button {
+    cursor: pointer;
+    background-color: #f3f3f3;
+    border-color: #bbb;
+    transition: background-color 0.3s ease;
+    &.add-button {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: #fff;
+      border-color: #0056b3;
+
+      &:hover {
+        cursor: pointer;
+        background-color: #0056b3;
+      }
+    }
+    &:hover {
+      background-color: #e9e9e9;
+    }
+  }
+}
