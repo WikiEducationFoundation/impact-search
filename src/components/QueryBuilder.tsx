@@ -1,22 +1,25 @@
 import { useState } from "react";
 import "./QueryBuilder.scss";
 import QueryItem from "./QueryItem";
+import { buildWikidataQuery } from "../common/utils";
 
 export default function QueryBuilder() {
-  const [properties, setProperties] = useState<QueryProperty[]>([
+  const [queryItemsData, setQueryItemsData] = useState<QueryProperty[]>([
     { property: "", qValue: "" },
   ]);
 
-  const handleAddProperty = () => {
-    if (properties.length < 5) {
-      setProperties([...properties, { property: "", qValue: "" }]);
+  const handleAddQueryItem = () => {
+    if (queryItemsData.length < 5) {
+      setQueryItemsData([...queryItemsData, { property: "", qValue: "" }]);
     }
   };
 
   const handleRemoveQueryItem = (index: number) => {
-    if (properties.length > 1) {
-      const updatedProperties = properties.filter((_, idx) => idx !== index);
-      setProperties(updatedProperties);
+    if (queryItemsData.length > 1) {
+      const updatedProperties = queryItemsData.filter(
+        (_, idx) => idx !== index
+      );
+      setQueryItemsData(updatedProperties);
     }
   };
 
@@ -25,15 +28,39 @@ export default function QueryBuilder() {
     field: "property" | "qValue",
     value: string
   ) => {
-    const updatedProperties = [...properties];
+    const updatedProperties = [...queryItemsData];
     updatedProperties[index][field] = value;
-    setProperties(updatedProperties);
+    setQueryItemsData(updatedProperties);
   };
 
+  const handleSubmit = () => {
+    const articles = fetchArticlesByQuery();
+    console.log(articles);
+  };
+
+  async function fetchArticlesByQuery() {
+    const gender = queryItemsData.filter((item) => item.property === "gender");
+    const ethnicity = queryItemsData.filter(
+      (item) => item.property === "ethnicity"
+    );
+    const occupations = queryItemsData.filter(
+      (item) => item.property === "occupation"
+    );
+
+    const query: string = buildWikidataQuery(
+      occupations.map((occupation) => occupation.qValue),
+      gender[0].qValue
+    );
+    const response = await fetch(
+      `https://query.wikidata.org/sparql?query=${query}&format=json`
+    );
+    const queriedArticlesJSON = await response.json();
+    return queriedArticlesJSON;
+  }
   return (
     <div className="query-builder">
       <label>Select Properties</label>
-      {properties.map((property, index) => (
+      {queryItemsData.map((property, index) => (
         <QueryItem
           handleChange={(index, value) =>
             handleChange(index, "property", value)
@@ -43,16 +70,22 @@ export default function QueryBuilder() {
           }
           handleRemoveQueryItem={handleRemoveQueryItem}
           index={index}
-          properties={properties}
+          key={index}
+          properties={queryItemsData}
           property={property.property}
           qValue={property.qValue}
         />
       ))}
-      {properties.length < 5 && (
-        <button className="add-button" onClick={handleAddProperty}>
+      {queryItemsData.length < 5 && (
+        <button className="add-button" onClick={handleAddQueryItem}>
           Add
         </button>
       )}
+      <div>
+        <button className="submit-button" onClick={handleSubmit}>
+          Run Query
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,21 +1,29 @@
 function buildWikidataQuery(
-  occupations: string[],
-  gender: string,
-  ethnicity: string
+  occupationIDs: string[],
+  genderID: string = "",
+  ethnicityID: string = ""
 ): string {
-  let query = `SELECT DISTINCT ?article
-WHERE {
-    ?person wdt:P31 wd:Q5 .`; // Q5 represents human
+  const properties = {
+    instanceOf: "P31",
+    sexOrGender: "P21",
+    ethnicGroup: "P172",
+    occupation: "P106",
+  };
+  const qValues = { human: "Q5" };
+  let query = `SELECT DISTINCT ?article WHERE {
+    ?person wdt:${properties.instanceOf} wd:${qValues.human} .`;
 
-  if (gender) {
-    query += `\n    ?person wdt:P21 wd:${gender} .`;
+  if (genderID) {
+    query += `\n    ?person wdt:${properties.sexOrGender} wd:${genderID} .`;
   }
 
-  if (ethnicity) {
-    query += `\n    ?person wdt:P172 wd:${ethnicity} .`;
+  if (ethnicityID) {
+    query += `\n    ?person wdt:${properties.ethnicGroup} wd:${ethnicityID} .`;
   }
 
-  query += `\n    ?person wdt:P106 ?occ .\n    VALUES ?occ { ${occupations
+  query += `\n    ?person wdt:${
+    properties.occupation
+  } ?occ .\n    VALUES ?occ { ${occupationIDs
     .map((occ) => `wd:${occ}`)
     .join(" ")} }`;
 
@@ -28,4 +36,4 @@ WHERE {
   return query;
 }
 
-export default { buildWikidataQuery };
+export { buildWikidataQuery };

@@ -42,6 +42,7 @@ type QueryItemProps = {
   handleRemoveQueryItem: (index: number) => void;
   index: number;
 };
+
 type QueryProperty = {
   property: string;
   qValue: string;
