@@ -33,8 +33,8 @@ export default function QueryBuilder() {
     setQueryItemsData(updatedProperties);
   };
 
-  const handleSubmit = () => {
-    const articles = fetchArticlesByQuery();
+  const handleSubmit = async () => {
+    const articles = await fetchArticlesByQuery();
     console.log(articles);
   };
 
@@ -49,10 +49,17 @@ export default function QueryBuilder() {
 
     const query: string = buildWikidataQuery(
       occupations.map((occupation) => occupation.qValue),
-      gender[0].qValue
+      gender.length > 0 ? gender[0].qValue : "",
+      ethnicity.length > 0 ? ethnicity[0].qValue : ""
     );
+
     const response = await fetch(
-      `https://query.wikidata.org/sparql?query=${query}&format=json`
+      `https://query.wikidata.org/sparql?query=${query}&format=json`,
+      {
+        headers: {
+          Accept: "application/sparql-results+json",
+        },
+      }
     );
     const queriedArticlesJSON = await response.json();
     return queriedArticlesJSON;

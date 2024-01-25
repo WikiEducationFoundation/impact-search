@@ -1,7 +1,7 @@
 function buildWikidataQuery(
   occupationIDs: string[],
-  genderID: string = "",
-  ethnicityID: string = ""
+  genderID: string,
+  ethnicityID: string
 ): string {
   const properties = {
     instanceOf: "P31",
@@ -21,11 +21,13 @@ function buildWikidataQuery(
     query += `\n    ?person wdt:${properties.ethnicGroup} wd:${ethnicityID} .`;
   }
 
-  query += `\n    ?person wdt:${
-    properties.occupation
-  } ?occ .\n    VALUES ?occ { ${occupationIDs
-    .map((occ) => `wd:${occ}`)
-    .join(" ")} }`;
+  if (occupationIDs.length > 0) {
+    query += `\n    ?person wdt:${
+      properties.occupation
+    } ?occ .\n    VALUES ?occ { ${occupationIDs
+      .map((occ) => `wd:${occ}`)
+      .join(" ")} }`;
+  }
 
   query += `
     ?article schema:about ?person .
