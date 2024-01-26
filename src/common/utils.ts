@@ -35,7 +35,7 @@ function buildWikidataQuery(
     SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
 }`;
 
-  return query;
+  return encodeURIComponent(query);
 }
 
 export { buildWikidataQuery };

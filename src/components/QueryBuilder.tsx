@@ -52,7 +52,6 @@ export default function QueryBuilder() {
       gender.length > 0 ? gender[0].qValue : "",
       ethnicity.length > 0 ? ethnicity[0].qValue : ""
     );
-
     const response = await fetch(
       `https://query.wikidata.org/sparql?query=${query}&format=json`,
       {
