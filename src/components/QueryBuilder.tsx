@@ -2,11 +2,20 @@ import { useState } from "react";
 import "./QueryBuilder.scss";
 import QueryItem from "./QueryItem";
 import { buildWikidataQuery } from "../common/utils";
+import ArticlesTable from "./ArticlesTable";
 
 export default function QueryBuilder() {
   const [queryItemsData, setQueryItemsData] = useState<QueryProperty[]>([
     { property: "", qValue: "" },
   ]);
+  const [articles, setArticles] = useState<
+    {
+      article: {
+        type: string;
+        value: string;
+      };
+    }[]
+  >([]);
 
   const handleAddQueryItem = () => {
     if (queryItemsData.length < 5) {
@@ -34,11 +43,11 @@ export default function QueryBuilder() {
   };
 
   const handleSubmit = async () => {
-    const articles = await fetchArticlesByQuery();
-    console.log(articles);
+    const fetchedArticles = await fetchArticlesByQuery();
+    setArticles(fetchedArticles.results.bindings);
   };
 
-  async function fetchArticlesByQuery() {
+  async function fetchArticlesByQuery(): Promise<SPARQLResponse> {
     const gender = queryItemsData.filter((item) => item.property === "gender");
     const ethnicity = queryItemsData.filter(
       (item) => item.property === "ethnicity"
@@ -60,7 +69,7 @@ export default function QueryBuilder() {
         },
       }
     );
-    const queriedArticlesJSON = await response.json();
+    const queriedArticlesJSON: SPARQLResponse = await response.json();
     return queriedArticlesJSON;
   }
   return (
@@ -92,6 +101,7 @@ export default function QueryBuilder() {
           Run Query
         </button>
       </div>
+      {articles.length > 0 && <ArticlesTable articles={articles} />}
     </div>
   );
 }
@@ -99,4 +109,18 @@ export default function QueryBuilder() {
 type QueryProperty = {
   property: string;
   qValue: string;
+};
+
+type SPARQLResponse = {
+  head: {
+    vars: string[];
+  };
+  results: {
+    bindings: Array<{
+      article: {
+        type: string;
+        value: string;
+      };
+    }>;
+  };
 };
