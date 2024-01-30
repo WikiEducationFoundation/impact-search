@@ -15,6 +15,11 @@ export default function QueryBuilder() {
         type: string;
         value: string;
       };
+      personLabel: {
+        "xml:lang": string;
+        type: string;
+        value: string;
+      };
     }[]
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -141,6 +146,11 @@ type SPARQLResponse = {
   results: {
     bindings: Array<{
       article: {
+        type: string;
+        value: string;
+      };
+      personLabel: {
+        "xml:lang": string;
         type: string;
         value: string;
       };

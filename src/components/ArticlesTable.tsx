@@ -8,6 +8,11 @@ export default function ArticlesTable({
       type: string;
       value: string;
     };
+    personLabel: {
+      "xml:lang": string;
+      type: string;
+      value: string;
+    };
   }[];
 }) {
   return (
@@ -21,7 +26,7 @@ export default function ArticlesTable({
         {articles.map((item, index) => (
           <tr key={index}>
             <td>
-              <a href={item.article.value}>{item.article.value}</a>
+              <a href={item.article.value}>{item.personLabel.value}</a>
             </td>
           </tr>
         ))}

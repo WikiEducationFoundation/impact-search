@@ -10,7 +10,7 @@ function buildWikidataQuery(
     occupation: "P106",
   };
   const qValues = { human: "Q5" };
-  let query = `SELECT DISTINCT ?article WHERE {
+  let query = `SELECT DISTINCT ?article ?personLabel WHERE {
     ?person wdt:${properties.instanceOf} wd:${qValues.human} .`;
 
   if (genderID) {
