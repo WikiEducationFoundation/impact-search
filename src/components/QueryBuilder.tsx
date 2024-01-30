@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import "./QueryBuilder.scss";
 import QueryItem from "./QueryItem";
 import { buildWikidataQuery } from "../common/utils";
 import ArticlesTable from "./ArticlesTable";
+import LoadingOval from "./LoadingOval";
 
 export default function QueryBuilder() {
   const [queryItemsData, setQueryItemsData] = useState<QueryProperty[]>([
@@ -16,6 +17,7 @@ export default function QueryBuilder() {
       };
     }[]
   >([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleAddQueryItem = () => {
     if (queryItemsData.length < 5) {
@@ -42,12 +44,15 @@ export default function QueryBuilder() {
     setQueryItemsData(updatedProperties);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     const fetchedArticles = await fetchArticlesByQuery();
     setArticles(fetchedArticles.results.bindings);
   };
 
   async function fetchArticlesByQuery(): Promise<SPARQLResponse> {
+    setIsLoading(true);
+
     const gender = queryItemsData.filter((item) => item.property === "gender");
     const ethnicity = queryItemsData.filter(
       (item) => item.property === "ethnicity"
@@ -70,38 +75,56 @@ export default function QueryBuilder() {
       }
     );
     const queriedArticlesJSON: SPARQLResponse = await response.json();
+
+    setIsLoading(false);
+
     return queriedArticlesJSON;
   }
   return (
     <div className="query-builder">
       <label>Select Properties</label>
-      {queryItemsData.map((property, index) => (
-        <QueryItem
-          handleChange={(index, value) =>
-            handleChange(index, "property", value)
-          }
-          handleTextFieldChange={(index, value) =>
-            handleChange(index, "qValue", value)
-          }
-          handleRemoveQueryItem={handleRemoveQueryItem}
-          index={index}
-          key={index}
-          properties={queryItemsData}
-          property={property.property}
-          qValue={property.qValue}
-        />
-      ))}
-      {queryItemsData.length < 5 && (
-        <button className="add-button" onClick={handleAddQueryItem}>
-          Add
-        </button>
+      <form onSubmit={(e) => handleSubmit(e)}>
+        {queryItemsData.map((property, index) => (
+          <QueryItem
+            handleChange={(index, value) =>
+              handleChange(index, "property", value)
+            }
+            handleTextFieldChange={(index, value) =>
+              handleChange(index, "qValue", value)
+            }
+            handleRemoveQueryItem={handleRemoveQueryItem}
+            index={index}
+            key={index}
+            properties={queryItemsData}
+            property={property.property}
+            qValue={property.qValue}
+          />
+        ))}
+        {queryItemsData.length < 5 && (
+          <button
+            type="button"
+            className="add-button"
+            onClick={handleAddQueryItem}
+          >
+            Add
+          </button>
+        )}
+        <div>
+          <button type="submit" className="submit-button">
+            Run Query
+          </button>
+        </div>
+      </form>
+
+      {isLoading ? (
+        <div className="oval-container">
+          <LoadingOval visible={isLoading} />
+        </div>
+      ) : articles.length > 0 ? (
+        <ArticlesTable articles={articles} />
+      ) : (
+        ""
       )}
-      <div>
-        <button className="submit-button" onClick={handleSubmit}>
-          Run Query
-        </button>
-      </div>
-      {articles.length > 0 && <ArticlesTable articles={articles} />}
     </div>
   );
 }

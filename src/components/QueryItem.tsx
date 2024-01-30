@@ -14,6 +14,7 @@ export default function QueryItem({
       <select
         onChange={(e) => handleChange(index, e.target.value)}
         value={property}
+        required
       >
         <option value="">--Please choose an option--</option>
         <option value="gender">Gender</option>
@@ -25,9 +26,12 @@ export default function QueryItem({
         value={qValue}
         onChange={(e) => handleTextFieldChange(index, e.target.value)}
         placeholder="Enter additional info"
+        required
       />
       {properties.length > 1 && (
-        <button onClick={() => handleRemoveQueryItem(index)}>Remove</button>
+        <button type="button" onClick={() => handleRemoveQueryItem(index)}>
+          Remove
+        </button>
       )}
     </div>
   );
