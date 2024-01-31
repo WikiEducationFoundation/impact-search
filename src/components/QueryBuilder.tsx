@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import { SPARQLResponse } from "../types";
 import "./QueryBuilder.scss";
 import QueryItem from "./QueryItem";
 import { buildWikidataQuery } from "../common/utils";
@@ -137,23 +138,4 @@ export default function QueryBuilder() {
 type QueryProperty = {
   property: string;
   qValue: string;
-};
-
-type SPARQLResponse = {
-  head: {
-    vars: string[];
-  };
-  results: {
-    bindings: Array<{
-      article: {
-        type: string;
-        value: string;
-      };
-      personLabel: {
-        "xml:lang": string;
-        type: string;
-        value: string;
-      };
-    }>;
-  };
 };
