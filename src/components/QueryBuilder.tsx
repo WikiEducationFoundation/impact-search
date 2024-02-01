@@ -58,6 +58,7 @@ export default function QueryBuilder() {
 
   async function fetchArticlesByQuery(): Promise<SPARQLResponse> {
     setIsLoading(true);
+    let queriedArticlesJSON: SPARQLResponse;
 
     const gender = queryItemsData.filter((item) => item.property === "gender");
     const ethnicity = queryItemsData.filter(
@@ -72,15 +73,25 @@ export default function QueryBuilder() {
       gender.length > 0 ? gender[0].qValue : "",
       ethnicity.length > 0 ? ethnicity[0].qValue : ""
     );
-    const response = await fetch(
-      `https://query.wikidata.org/sparql?query=${query}&format=json`,
-      {
-        headers: {
-          Accept: "application/sparql-results+json",
-        },
+    try {
+      const response = await fetch(
+        `https://query.wikidata.org/sparql?query=${query}&format=json`,
+        {
+          headers: {
+            Accept: "application/sparql-results+json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok.");
       }
-    );
-    const queriedArticlesJSON: SPARQLResponse = await response.json();
+
+      queriedArticlesJSON = await response.json();
+    } catch (error) {
+      console.error("Error fetching articles: ", error);
+      queriedArticlesJSON = { head: { vars: [] }, results: { bindings: [] } };
+    }
 
     setIsLoading(false);
 
@@ -88,6 +99,8 @@ export default function QueryBuilder() {
   }
   return (
     <div className="query-builder">
+      <h1>Impact Search</h1>
+
       <label>Select Properties</label>
       <form onSubmit={(e) => handleSubmit(e)}>
         {queryItemsData.map((property, index) => (
