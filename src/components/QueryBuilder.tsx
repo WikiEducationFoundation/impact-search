@@ -101,8 +101,8 @@ export default function QueryBuilder() {
     <div className="query-builder">
       <h1>Impact Search</h1>
 
-      <label>Select Properties</label>
       <form onSubmit={(e) => handleSubmit(e)}>
+        <label>Select Properties</label>
         {queryItemsData.map((property, index) => (
           <QueryItem
             handleChange={(index, value) =>

@@ -16,7 +16,7 @@ export default function QueryItem({
         value={property}
         required
       >
-        <option value="">--Please choose an option--</option>
+        <option value="">--Please choose a property--</option>
         <option value="gender">Gender</option>
         <option value="ethnicity">Ethnicity</option>
         <option value="occupation">Occupation</option>
@@ -25,7 +25,7 @@ export default function QueryItem({
         type="text"
         value={qValue}
         onChange={(e) => handleTextFieldChange(index, e.target.value)}
-        placeholder="Enter additional info"
+        placeholder="Enter a Value"
         required
       />
       {properties.length > 1 && (
