@@ -4,6 +4,7 @@ import App from "./App.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./routes/ErrorPage.tsx";
 import HomePage from "./routes/HomePage.tsx";
+import WikipediaCategoryPage from "./routes/WikipediaCategoryPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -14,7 +15,10 @@ const router = createBrowserRouter([
   {
     path: "/wikidata-tool",
     element: <App />,
-    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/wikipedia-category-tool",
+    element: <WikipediaCategoryPage />,
   },
 ]);
 

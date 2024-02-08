@@ -11,11 +11,13 @@ export default function HomePage() {
           title="Wikidata Query Tool"
         />
       </Link>
+      <Link to={"/wikipedia-category-tool"}>
+        <Card
+          description="Filter through wikipedia categories and their subcategories"
+          title="Wikipedia Category Tool"
+        />
+      </Link>
 
-      <Card
-        description="Filter through wikipedia categories and their subcategories"
-        title="Wikipedia Category Tool"
-      />
       <Card description="WIP" title="WIP" />
     </div>
   );
