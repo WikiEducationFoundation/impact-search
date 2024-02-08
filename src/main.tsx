@@ -8,6 +8,11 @@ import HomePage from "./routes/HomePage.tsx";
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <HomePage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/wikidata-tool",
     element: <App />,
     errorElement: <ErrorPage />,
   },
