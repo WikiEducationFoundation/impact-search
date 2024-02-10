@@ -5,3 +5,69 @@ html {
   padding: 10px;
   font-family: Arial, sans-serif;
 }
+
+input[type="text"] {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  color: #333;
+  background-color: #fff;
+  outline: none;
+  transition: border-color 0.3s ease;
+
+  &:focus {
+    border-color: #007bff;
+  }
+}
+
+select,
+button {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  color: #333;
+  background-color: #fff;
+}
+
+button {
+  cursor: pointer;
+  background-color: #f3f3f3;
+  border-color: #bbb;
+  transition: background-color 0.3s ease;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+
+  &.add-button {
+    background-color: #007bff;
+    border-color: #0056b3;
+    color: #fff;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+
+  &.submit-button {
+    margin-top: 10px;
+    background-color: #33b249;
+    border-color: #278a37;
+    color: #fff;
+
+    &:hover {
+      background-color: #278a37;
+    }
+  }
+
+  &.export-csv-button {
+    margin-top: 10px;
+    align-self: flex-start;
+  }
+  &:hover {
+    cursor: pointer;
+    background-color: #e9e9e9;
+  }
+}
