@@ -60,6 +60,13 @@ button {
     &:hover {
       background-color: #278a37;
     }
+
+    &:disabled {
+      background-color: #c8e6c9;
+      border-color: #a5d6a7;
+      color: #9e9e9e;
+      cursor: not-allowed;
+    }
   }
 
   &.export-csv-button {
