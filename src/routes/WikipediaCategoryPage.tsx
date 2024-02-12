@@ -2,6 +2,7 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import "./WikipediaCategoryPage.scss";
 import { MediaWikiResponse } from "../types";
 import CategoryTree from "../components/CategoryTree";
+import LoadingOval from "../components/LoadingOval";
 
 export default function WikipediaCategoryPage() {
   const [categoryURL, setCategoryURL] = useState<string>("");
@@ -65,6 +66,15 @@ export default function WikipediaCategoryPage() {
           Run Query
         </button>
       </form>
+      {isLoading ? (
+        <div className="oval-container">
+          <LoadingOval visible={isLoading} />
+        </div>
+      ) : SubcatsData?.query ? (
+        <CategoryTree mediaWikiResponse={SubcatsData} />
+      ) : (
+        ""
+      )}
     </div>
   );
 }
