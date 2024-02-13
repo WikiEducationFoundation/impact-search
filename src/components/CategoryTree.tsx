@@ -10,12 +10,7 @@ export default function CategoryTree({
 }: {
   mediaWikiResponse: MediaWikiResponse;
 }) {
-  function convertToTree() {
-    const rootCategory: CategoryNode = {
-      name: "root",
-      children: [],
-    };
-
+  function convertToTree(rootCategory: CategoryNode) {
     const categories = mediaWikiResponse.query.pages;
     for (const key in categories) {
       if (Object.prototype.hasOwnProperty.call(categories, key)) {
@@ -24,7 +19,7 @@ export default function CategoryTree({
           page.title.slice(9) /* slice out "category:" prefix */
         } (${page.categoryinfo.subcats} C, ${page.categoryinfo.pages} P)`;
         if (rootCategory.children) {
-          rootCategory.children.push({ name: categoryName });
+          rootCategory.children.push({ name: categoryName, id: page.pageid });
         }
       }
     }
@@ -32,7 +27,13 @@ export default function CategoryTree({
     return rootCategory;
   }
 
-  const data = flattenTree(convertToTree());
+  const data = flattenTree(
+    convertToTree({
+      name: "root",
+      id: 0,
+      children: [],
+    })
+  );
 
   return (
     <div>
@@ -102,6 +103,7 @@ const CheckBoxIcon: FC<CheckBoxIconProps> = ({ variant, onClick }) => {
 
 type CategoryNode = {
   name: string;
+  id: number;
   children?: CategoryNode[];
 };
 type CheckBoxIconProps = {
