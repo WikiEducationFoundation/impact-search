@@ -25,14 +25,9 @@ export default function WikipediaCategoryPage() {
     let queriedSubcatsJSON: MediaWikiResponse;
     const categoryTitle: string = categoryURL.split("/").slice(-1)[0];
     try {
-      const urlParams: string = `action=query&generator=categorymembers&gcmlimit=130&gcmtype=subcat&prop=categoryinfo&gcmtitle=${categoryTitle}&format=json&origin=*`;
+      const urlParams: string = `action=query&generator=categorymembers&gcmlimit=500&gcmtype=subcat&prop=categoryinfo&gcmtitle=${categoryTitle}&format=json&origin=*`;
       const response = await fetch(
-        `https://en.wikipedia.org/w/api.php?${urlParams}`,
-        {
-          headers: {
-            Accept: "application/sparql-results+json",
-          },
-        }
+        `https://en.wikipedia.org/w/api.php?${urlParams}`
       );
 
       if (!response.ok) {

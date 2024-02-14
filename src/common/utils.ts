@@ -1,4 +1,4 @@
-import { SPARQLResponse } from "../types";
+import { CategoryNode, MediaWikiResponse, SPARQLResponse } from "../types";
 
 function buildWikidataQuery(
   occupationIDs: string[],
@@ -60,4 +60,28 @@ function downloadAsCSV(csvContent: string, fileName = "articles.csv"): void {
   link.click();
 }
 
-export { buildWikidataQuery, convertArticlesToCSV, downloadAsCSV };
+function convertToTree(
+  rootCategory: CategoryNode,
+  mediaWikiResponse: MediaWikiResponse
+): CategoryNode {
+  const categories = mediaWikiResponse.query.pages;
+  for (const key in categories) {
+    if (Object.prototype.hasOwnProperty.call(categories, key)) {
+      const page = categories[key];
+      const categoryName: string = `${
+        page.title.slice(9) /* slice out "category:" prefix */
+      } (${page.categoryinfo.subcats} C, ${page.categoryinfo.pages} P)`;
+      if (rootCategory.children) {
+        rootCategory.children.push({ name: categoryName, id: page.pageid });
+      }
+    }
+  }
+
+  return rootCategory;
+}
+export {
+  buildWikidataQuery,
+  convertArticlesToCSV,
+  downloadAsCSV,
+  convertToTree,
+};

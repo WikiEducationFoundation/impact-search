@@ -4,35 +4,22 @@ import "./CategoryTree.scss";
 import { FaSquare, FaCheckSquare, FaMinusSquare } from "react-icons/fa";
 import { IoMdArrowDropright } from "react-icons/io";
 import { MediaWikiResponse } from "../types";
+import { convertToTree } from "../common/utils";
 
 export default function CategoryTree({
   mediaWikiResponse,
 }: {
   mediaWikiResponse: MediaWikiResponse;
 }) {
-  function convertToTree(rootCategory: CategoryNode) {
-    const categories = mediaWikiResponse.query.pages;
-    for (const key in categories) {
-      if (Object.prototype.hasOwnProperty.call(categories, key)) {
-        const page = categories[key];
-        const categoryName: string = `${
-          page.title.slice(9) /* slice out "category:" prefix */
-        } (${page.categoryinfo.subcats} C, ${page.categoryinfo.pages} P)`;
-        if (rootCategory.children) {
-          rootCategory.children.push({ name: categoryName, id: page.pageid });
-        }
-      }
-    }
-
-    return rootCategory;
-  }
-
   const data = flattenTree(
-    convertToTree({
-      name: "root",
-      id: 0,
-      children: [],
-    })
+    convertToTree(
+      {
+        name: "root",
+        id: 0,
+        children: [],
+      },
+      mediaWikiResponse
+    )
   );
 
   return (

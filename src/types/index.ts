@@ -45,4 +45,10 @@ type MediaWikiResponse = {
   };
   servedby?: string;
 };
-export type { SPARQLResponse, MediaWikiResponse };
+
+type CategoryNode = {
+  name: string;
+  id: number;
+  children?: CategoryNode[];
+};
+export type { SPARQLResponse, MediaWikiResponse, CategoryNode };
