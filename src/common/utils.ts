@@ -60,28 +60,38 @@ function downloadAsCSV(csvContent: string, fileName = "articles.csv"): void {
   link.click();
 }
 
-function convertToTree(
-  rootCategory: CategoryNode,
-  mediaWikiResponse: MediaWikiResponse
-): CategoryNode {
-  const categories = mediaWikiResponse.query.pages;
-  for (const key in categories) {
-    if (Object.prototype.hasOwnProperty.call(categories, key)) {
-      const page = categories[key];
+const convertResponseToTree = (response: MediaWikiResponse): CategoryNode => {
+  const pages = response.query.pages;
+  const rootNode: CategoryNode = {
+    name: "root",
+    id: 0,
+    pages: [],
+    children: [],
+  };
+
+  for (const [key, value] of Object.entries(pages)) {
+    if (value.categoryinfo) {
       const categoryName: string = `${
-        page.title.slice(9) /* slice out "category:" prefix */
-      } (${page.categoryinfo.subcats} C, ${page.categoryinfo.pages} P)`;
-      if (rootCategory.children) {
-        rootCategory.children.push({ name: categoryName, id: page.pageid });
-      }
+        value.title.slice(9) /* slice out "category:" prefix */
+      } (${value.categoryinfo.subcats} C, ${value.categoryinfo.pages} P)`;
+
+      rootNode.children?.push({
+        name: categoryName,
+        id: value.pageid,
+        isBranch: true,
+        pages: [],
+        children: [],
+      });
+    } else {
+      rootNode.pages.push({ id: value.pageid, title: value.title });
     }
   }
 
-  return rootCategory;
-}
+  return rootNode;
+};
 export {
   buildWikidataQuery,
   convertArticlesToCSV,
   downloadAsCSV,
-  convertToTree,
+  convertResponseToTree,
 };

@@ -29,7 +29,7 @@ type MediaWikiResponse = {
         pageid: number;
         ns: number;
         title: string;
-        categoryinfo: {
+        categoryinfo?: {
           size: number;
           pages: number;
           files: number;
@@ -46,9 +46,17 @@ type MediaWikiResponse = {
   servedby?: string;
 };
 
+type Page = {
+  id: number;
+  title: string;
+};
+
 type CategoryNode = {
   name: string;
   id: number;
+  isBranch: boolean;
+  pages: Page[];
   children?: CategoryNode[];
 };
+
 export type { SPARQLResponse, MediaWikiResponse, CategoryNode };

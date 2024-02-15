@@ -1,12 +1,13 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import "./WikipediaCategoryPage.scss";
-import { MediaWikiResponse } from "../types";
+import { CategoryNode, MediaWikiResponse } from "../types";
 import CategoryTree from "../components/CategoryTree";
 import LoadingOval from "../components/LoadingOval";
+import { convertResponseToTree } from "../common/utils";
 
 export default function WikipediaCategoryPage() {
   const [categoryURL, setCategoryURL] = useState<string>("");
-  const [SubcatsData, setSubcatsData] = useState<MediaWikiResponse>();
+  const [SubcatsData, setSubcatsData] = useState<CategoryNode>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -15,17 +16,17 @@ export default function WikipediaCategoryPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsLoading(true);
     const fetchedSubcats = await fetchInitialSubcats();
-    setSubcatsData(fetchedSubcats);
+    setSubcatsData(convertResponseToTree(fetchedSubcats));
+    setIsLoading(false);
   };
 
   async function fetchInitialSubcats(): Promise<MediaWikiResponse> {
-    setIsLoading(true);
-
     let queriedSubcatsJSON: MediaWikiResponse;
     const categoryTitle: string = categoryURL.split("/").slice(-1)[0];
     try {
-      const urlParams: string = `action=query&generator=categorymembers&gcmlimit=500&gcmtype=subcat&prop=categoryinfo&gcmtitle=${categoryTitle}&format=json&origin=*`;
+      const urlParams: string = `action=query&generator=categorymembers&gcmlimit=500&prop=categoryinfo&gcmtitle=${categoryTitle}&format=json&origin=*`;
       const response = await fetch(
         `https://en.wikipedia.org/w/api.php?${urlParams}`
       );
@@ -42,8 +43,6 @@ export default function WikipediaCategoryPage() {
       console.error("Error fetching subcats: ", error);
       queriedSubcatsJSON = {};
     }
-
-    setIsLoading(false);
 
     return queriedSubcatsJSON;
   }
@@ -65,8 +64,8 @@ export default function WikipediaCategoryPage() {
         <div className="oval-container">
           <LoadingOval visible={isLoading} />
         </div>
-      ) : SubcatsData?.query ? (
-        <CategoryTree mediaWikiResponse={SubcatsData} />
+      ) : SubcatsData ? (
+        <CategoryTree treeData={SubcatsData} />
       ) : (
         ""
       )}
