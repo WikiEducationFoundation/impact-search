@@ -1,18 +1,32 @@
 import React, { FC, useState } from "react";
-import TreeView, { flattenTree } from "react-accessible-treeview";
+import TreeView, {
+  INode,
+  ITreeViewOnLoadDataProps,
+  NodeId,
+  flattenTree,
+} from "react-accessible-treeview";
 import "./CategoryTree.scss";
 import { FaSquare, FaCheckSquare, FaMinusSquare } from "react-icons/fa";
 import { IoMdArrowDropright } from "react-icons/io";
 import { AiOutlineLoading } from "react-icons/ai";
 import { CategoryNode } from "../types";
+import { IFlatMetadata } from "react-accessible-treeview/dist/TreeView/utils";
 
 export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
-  const [categoryTree, setCategoryTree] = useState(flattenTree(treeData));
-  const [nodesAlreadyLoaded, setNodesAlreadyLoaded] = useState([]);
+  const [categoryTree, setCategoryTree] = useState<INode<IFlatMetadata>[]>(
+    flattenTree(treeData)
+  );
+  const [nodesAlreadyLoaded, setNodesAlreadyLoaded] = useState<
+    INode<IFlatMetadata>[]
+  >([]);
 
   const data = categoryTree;
 
-  const updateTreeData = (list, id, children) => {
+  const updateTreeData = (
+    list: INode<IFlatMetadata>[],
+    id: NodeId,
+    children: INode<IFlatMetadata>[]
+  ) => {
     const data = list.map((node) => {
       if (node.id === id) {
         node.children = children.map((el) => {
@@ -24,8 +38,9 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
     return data.concat(children);
   };
 
-  const onLoadData = ({ element }) => {
-    return new Promise((resolve) => {
+  const onLoadData = (loadProps: ITreeViewOnLoadDataProps) => {
+    const element = loadProps.element;
+    return new Promise<void>((resolve) => {
       if (element.children.length > 0) {
         resolve();
         return;
@@ -53,13 +68,16 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
     });
   };
 
-  const wrappedOnLoadData = async (props) => {
-    await onLoadData(props);
+  const wrappedOnLoadData = async (loadProps: ITreeViewOnLoadDataProps) => {
+    console.log(loadProps);
+    await onLoadData(loadProps);
     if (
-      props.element.children.length === 0 &&
-      !nodesAlreadyLoaded.find((e) => e.id === props.element.id)
+      loadProps.element.children.length === 0 &&
+      !nodesAlreadyLoaded.find(
+        (e: INode<IFlatMetadata>) => e.id === loadProps.element.id
+      )
     ) {
-      setNodesAlreadyLoaded([...nodesAlreadyLoaded, props.element]);
+      setNodesAlreadyLoaded([...nodesAlreadyLoaded, loadProps.element]);
     }
   };
 
@@ -85,7 +103,10 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
             handleSelect,
             handleExpand,
           }) => {
-            const branchNode = (isExpanded, element) => {
+            const branchNode = (
+              isExpanded: boolean,
+              element: INode<IFlatMetadata>
+            ) => {
               return isExpanded && element.children.length === 0 ? (
                 <AiOutlineLoading className="loading-icon" />
               ) : (
@@ -141,6 +162,7 @@ type CheckBoxIconProps = {
   variant: "all" | "none" | "some";
   onClick: (event: React.MouseEvent<SVGElement, MouseEvent>) => void;
 };
+
 type ArrowIconProps = {
   isOpen: boolean;
   className?: string;
