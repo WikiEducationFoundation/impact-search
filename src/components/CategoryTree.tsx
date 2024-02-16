@@ -11,6 +11,8 @@ import { IoMdArrowDropright } from "react-icons/io";
 import { AiOutlineLoading } from "react-icons/ai";
 import { CategoryNode } from "../types";
 import { IFlatMetadata } from "react-accessible-treeview/dist/TreeView/utils";
+import { fetchSubcatsAndPages } from "../common/api";
+import { convertResponseToTree } from "../common/utils";
 
 export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
   const [categoryTree, setCategoryTree] = useState<INode<IFlatMetadata>[]>(
@@ -38,38 +40,30 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
     return data.concat(children);
   };
 
-  const onLoadData = (loadProps: ITreeViewOnLoadDataProps) => {
+  const onLoadData = async (loadProps: ITreeViewOnLoadDataProps) => {
     const element = loadProps.element;
+    const fetchedData = flattenTree(
+      convertResponseToTree(
+        await fetchSubcatsAndPages(element.id, true),
+        categoryTree,
+        element.id as number
+      )
+    );
+
     return new Promise<void>((resolve) => {
       if (element.children.length > 0) {
         resolve();
         return;
       }
-      setTimeout(() => {
-        setCategoryTree((value) =>
-          updateTreeData(value, element.id, [
-            {
-              name: `Child Node`,
-              children: [],
-              id: value.length,
-              parent: element.id,
-              isBranch: true,
-            },
-            {
-              name: "Another child Node",
-              children: [],
-              id: value.length + 1,
-              parent: element.id,
-            },
-          ])
-        );
-        resolve();
-      }, 1000);
+
+      setCategoryTree((value) => {
+        return updateTreeData(value, element.id, fetchedData);
+      });
+      resolve();
     });
   };
 
   const wrappedOnLoadData = async (loadProps: ITreeViewOnLoadDataProps) => {
-    console.log(loadProps);
     await onLoadData(loadProps);
     if (
       loadProps.element.children.length === 0 &&

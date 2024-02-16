@@ -1,4 +1,6 @@
+import { INode } from "react-accessible-treeview";
 import { CategoryNode, MediaWikiResponse, SPARQLResponse } from "../types";
+import { IFlatMetadata } from "react-accessible-treeview/dist/TreeView/utils";
 
 function buildWikidataQuery(
   occupationIDs: string[],
@@ -60,17 +62,33 @@ function downloadAsCSV(csvContent: string, fileName = "articles.csv"): void {
   link.click();
 }
 
-const convertResponseToTree = (response: MediaWikiResponse): CategoryNode => {
+const convertResponseToTree = (
+  response: MediaWikiResponse,
+  existingIDs: INode<IFlatMetadata>[],
+  elementId: number
+): CategoryNode => {
   const pages = response.query.pages;
+
   const rootNode: CategoryNode = {
     name: "root",
-    id: 0,
+    isBranch: true,
+    id: elementId,
     pages: [],
     children: [],
   };
 
-  for (const [key, value] of Object.entries(pages)) {
+  for (const [, value] of Object.entries(pages)) {
     if (value.categoryinfo) {
+      let isDuplicateNode = false;
+      existingIDs.forEach((e) => {
+        if (e.id === value.pageid) {
+          isDuplicateNode = true;
+        }
+      });
+
+      if (isDuplicateNode) {
+        continue;
+      }
       const categoryName: string = `${
         value.title.slice(9) /* slice out "category:" prefix */
       } (${value.categoryinfo.subcats} C, ${value.categoryinfo.pages} P)`;
