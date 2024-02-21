@@ -78,3 +78,16 @@ button {
     background-color: #e9e9e9;
   }
 }
+
+.loading-icon{
+  animation: loading-spinner linear 0.9s infinite;
+}
+
+@keyframes loading-spinner{
+  0%{
+    transform: rotateZ(0deg);
+  }
+  100%{
+    transform: rotateZ(360deg);
+  }
+}

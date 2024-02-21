@@ -50,6 +50,9 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
       )
     );
 
+    // Remove the first root element which already exists in tree 
+    fetchedData.splice(0, 1);
+
     return new Promise<void>((resolve) => {
       if (element.children.length > 0) {
         resolve();
