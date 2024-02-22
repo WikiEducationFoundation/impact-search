@@ -3,7 +3,7 @@ import "./WikipediaCategoryPage.scss";
 import { CategoryNode } from "../types";
 import CategoryTree from "../components/CategoryTree";
 import LoadingOval from "../components/LoadingOval";
-import { convertResponseToTree } from "../common/utils";
+import { convertInitialResponseToTree } from "../common/utils";
 import { fetchSubcatsAndPages } from "../common/api";
 
 export default function WikipediaCategoryPage() {
@@ -21,7 +21,7 @@ export default function WikipediaCategoryPage() {
     const fetchedSubcats = await fetchSubcatsAndPages(
       categoryURL.split("/").slice(-1)[0]
     );
-    setSubcatsData(convertResponseToTree(fetchedSubcats, [], 0));
+    setSubcatsData(convertInitialResponseToTree(fetchedSubcats, [], 0));
     setIsLoading(false);
   };
 

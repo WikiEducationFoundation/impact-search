@@ -42,14 +42,11 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
 
   const onLoadData = async (loadProps: ITreeViewOnLoadDataProps) => {
     const element = loadProps.element;
-    const fetchedData = flattenTree(
-      convertResponseToTree(
-        await fetchSubcatsAndPages(element.id, true),
-        categoryTree,
-        element.id as number
-      )
+    const fetchedData = convertResponseToTree(
+      await fetchSubcatsAndPages(element.id, true),
+      element.id,
+      categoryTree
     );
-
     return new Promise<void>((resolve) => {
       if (element.children.length > 0) {
         resolve();
