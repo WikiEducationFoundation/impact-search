@@ -96,7 +96,7 @@ const convertInitialResponseToTree = (
       rootNode.children?.push({
         name: categoryName,
         id: value.pageid,
-        isBranch: true,
+        isBranch: value.categoryinfo.subcats > 0,
         pages: [],
         children: [],
       });
@@ -135,7 +135,7 @@ const convertResponseToTree = (
       subcats.push({
         name: categoryName,
         id: value.pageid,
-        isBranch: true,
+        isBranch: value.categoryinfo.subcats > 0,
         children: [],
         parent: parentID,
       });
