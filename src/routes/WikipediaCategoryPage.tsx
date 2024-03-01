@@ -18,10 +18,23 @@ export default function WikipediaCategoryPage() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    const fetchedSubcats = await fetchSubcatsAndPages(
-      categoryURL.split("/").slice(-1)[0]
-    );
-    setSubcatsData(convertInitialResponseToTree(fetchedSubcats, [], 0));
+    try {
+      const fetchedSubcatsAndPages = await fetchSubcatsAndPages(
+        categoryURL.split("/").slice(-1)[0]
+      );
+      if (!fetchedSubcatsAndPages) {
+        throw new Error("Invalid Response (possibly null)");
+      }
+      if (fetchedSubcatsAndPages.error) {
+        throw new Error(fetchedSubcatsAndPages.error.info);
+      }
+      setSubcatsData(
+        convertInitialResponseToTree(fetchedSubcatsAndPages, [], 0)
+      );
+    } catch (error) {
+      console.error(error);
+    }
+
     setIsLoading(false);
   };
 

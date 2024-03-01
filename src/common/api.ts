@@ -4,8 +4,8 @@ import { MediaWikiResponse } from "../types";
 async function fetchSubcatsAndPages(
   categoryIdentifier: NodeId,
   usePageID: boolean = false
-): Promise<MediaWikiResponse> {
-  let queriedSubcatsJSON: MediaWikiResponse;
+): Promise<MediaWikiResponse | null> {
+  let queriedSubcatsJSON: MediaWikiResponse | null = null;
   try {
     let identifier: string = "";
     if (usePageID) {
@@ -23,12 +23,8 @@ async function fetchSubcatsAndPages(
     }
 
     queriedSubcatsJSON = await response.json();
-    if (queriedSubcatsJSON?.error) {
-      console.error(queriedSubcatsJSON?.error.info);
-    }
   } catch (error) {
     console.error("Error fetching subcats: ", error);
-    queriedSubcatsJSON = {};
   }
 
   return queriedSubcatsJSON;

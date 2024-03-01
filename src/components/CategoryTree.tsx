@@ -42,8 +42,13 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
 
   const onLoadData = async (loadProps: ITreeViewOnLoadDataProps) => {
     const element = loadProps.element;
+    const fetchedSubcatsAndPages = await fetchSubcatsAndPages(element.id, true);
+    if (!fetchedSubcatsAndPages) {
+      console.error("Invalid Response (possibly null)");
+      return;
+    }
     const fetchedData = convertResponseToTree(
-      await fetchSubcatsAndPages(element.id, true),
+      fetchedSubcatsAndPages,
       element.id,
       categoryTree
     );
