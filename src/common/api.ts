@@ -23,10 +23,23 @@ async function fetchSubcatsAndPages(
     }
 
     queriedSubcatsJSON = await response.json();
+
+    while (queriedSubcatsJSON?.continue?.continue) {
+      const continueResponse = await fetch(
+        `https://en.wikipedia.org/w/api.php?gcmcontinue=${queriedSubcatsJSON?.continue?.gcmcontinue}&${urlParams}`
+      );
+      const continueSubcatsJSON: MediaWikiResponse =
+        await continueResponse.json();
+
+      queriedSubcatsJSON.continue = continueSubcatsJSON?.continue;
+      queriedSubcatsJSON.query.pages = {
+        ...queriedSubcatsJSON.query.pages,
+        ...continueSubcatsJSON.query.pages,
+      };
+    }
   } catch (error) {
     console.error("Error fetching subcats: ", error);
   }
-
   return queriedSubcatsJSON;
 }
 
