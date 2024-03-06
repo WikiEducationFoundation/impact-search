@@ -66,13 +66,16 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
   };
 
   const wrappedOnLoadData = async (loadProps: ITreeViewOnLoadDataProps) => {
-    await onLoadData(loadProps);
-    if (
-      loadProps.element.children.length === 0 &&
-      !nodesAlreadyLoaded.find(
-        (e: INode<IFlatMetadata>) => e.id === loadProps.element.id
-      )
-    ) {
+    const nodeHasNoChildData = loadProps.element.children.length === 0;
+    const nodeHasAlreadyBeenLoaded = nodesAlreadyLoaded.find(
+      (e) => e.id === loadProps.element.id
+    );
+
+    if (!nodeHasAlreadyBeenLoaded) {
+      await onLoadData(loadProps);
+    }
+
+    if (nodeHasNoChildData && !nodeHasAlreadyBeenLoaded) {
       setNodesAlreadyLoaded([...nodesAlreadyLoaded, loadProps.element]);
     }
   };
