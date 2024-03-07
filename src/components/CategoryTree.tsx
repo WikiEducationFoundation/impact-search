@@ -22,14 +22,12 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
     INode<IFlatMetadata>[]
   >([]);
 
-  const data = categoryTree;
-
   const updateTreeData = (
-    list: INode<IFlatMetadata>[],
+    currentTree: INode<IFlatMetadata>[],
     id: NodeId,
     children: INode<IFlatMetadata>[]
   ) => {
-    const data = list.map((node) => {
+    const data = currentTree.map((node) => {
       if (node.id === id) {
         node.children = children.map((el) => {
           return el.id;
@@ -40,15 +38,41 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
     return data.concat(children);
   };
 
-  const onLoadData = async (loadProps: ITreeViewOnLoadDataProps) => {
-    const element = loadProps.element;
-    const fetchedSubcatsAndPages = await fetchSubcatsAndPages(element.id, true);
+  const fetchChildrenRecursively = async (
+    nodeId: NodeId,
+    existingNodes: INode<IFlatMetadata>[]
+  ) => {
+    const fetchedSubcatsAndPages = await fetchSubcatsAndPages(nodeId, true);
     if (!fetchedSubcatsAndPages) {
       console.error("Invalid Response (possibly null)");
-      return;
+      return [];
     }
     const fetchedData = convertResponseToTree(
       fetchedSubcatsAndPages,
+      nodeId,
+      existingNodes
+    );
+
+    for (const childNode of fetchedData) {
+      if (childNode.isBranch) {
+        const fetchedChildren = await fetchChildrenRecursively(
+          childNode.id,
+          existingNodes.concat(fetchedData)
+        );
+        childNode.children = fetchedChildren.map((child) => child.id);
+      }
+    }
+
+    return fetchedData;
+  };
+  const onLoadData = async (loadProps: ITreeViewOnLoadDataProps) => {
+    const element = loadProps.element;
+
+    if (element.children.length > 0) {
+      return;
+    }
+
+    const fetchedData = await fetchChildrenRecursively(
       element.id,
       categoryTree
     );
@@ -57,7 +81,6 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
         resolve();
         return;
       }
-
       setCategoryTree((value) => {
         return updateTreeData(value, element.id, fetchedData);
       });
@@ -84,7 +107,7 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
     <div>
       <div className="checkbox">
         <TreeView
-          data={data}
+          data={categoryTree}
           aria-label="Checkbox tree"
           multiSelect
           propagateSelect
