@@ -1,8 +1,7 @@
-import { NodeId } from "react-accessible-treeview";
 import { MediaWikiResponse } from "../types";
 
 async function fetchSubcatsAndPages(
-  categoryIdentifier: NodeId,
+  categoryIdentifier: string | number,
   usePageID: boolean = false
 ): Promise<MediaWikiResponse | null> {
   let queriedSubcatsJSON: MediaWikiResponse | null = null;

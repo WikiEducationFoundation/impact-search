@@ -100,7 +100,7 @@ const convertInitialResponseToTree = (
         pages: [],
         children: [],
       });
-    } else {
+    } else if (rootNode.pages && !value.title.startsWith("file:")) {
       rootNode.pages.push({ id: value.pageid, title: value.title });
     }
   }
@@ -111,7 +111,7 @@ const convertInitialResponseToTree = (
 const convertResponseToTree = (
   response: MediaWikiResponse,
   parentID: NodeId,
-  existingIDs: INode<IFlatMetadata>[]
+  existingNodes: INode<IFlatMetadata>[]
 ): INode<IFlatMetadata>[] => {
   const pages = response.query.pages;
 
@@ -119,7 +119,7 @@ const convertResponseToTree = (
   for (const [, value] of Object.entries(pages)) {
     if (value.categoryinfo) {
       let isDuplicateNode = false;
-      existingIDs.forEach((e) => {
+      existingNodes.forEach((e) => {
         if (e.id === value.pageid) {
           isDuplicateNode = true;
         }

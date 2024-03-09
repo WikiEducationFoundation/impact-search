@@ -40,34 +40,37 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
 
   const fetchChildrenRecursively = async (
     nodeId: NodeId,
-    existingNodes: INode<IFlatMetadata>[]
+    existingNodes: INode<IFlatMetadata>[],
+    depth: number = 0
   ) => {
     const fetchedSubcatsAndPages = await fetchSubcatsAndPages(nodeId, true);
     if (!fetchedSubcatsAndPages) {
       console.error("Invalid Response (possibly null)");
       return [];
     }
-    const fetchedData = convertResponseToTree(
+    const parsedData = convertResponseToTree(
       fetchedSubcatsAndPages,
       nodeId,
       existingNodes
     );
-
-    for (const childNode of fetchedData) {
+    for (const childNode of parsedData) {
       if (childNode.isBranch) {
         const fetchedChildren = await fetchChildrenRecursively(
           childNode.id,
-          existingNodes.concat(fetchedData)
+          existingNodes.concat(parsedData),
+          depth + 1
         );
+
+        setCategoryTree((value) => {
+          return updateTreeData(value, childNode.id, fetchedChildren);
+        });
         childNode.children = fetchedChildren.map((child) => child.id);
       }
     }
-
-    return fetchedData;
+    return parsedData;
   };
   const onLoadData = async (loadProps: ITreeViewOnLoadDataProps) => {
     const element = loadProps.element;
-
     if (element.children.length > 0) {
       return;
     }

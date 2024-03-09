@@ -55,8 +55,9 @@ type CategoryNode = {
   name: string;
   id: number;
   isBranch: boolean;
-  pages: Page[];
+  pages?: Page[];
   children?: CategoryNode[];
+  parent?: string | number;
 };
 
 export type { SPARQLResponse, MediaWikiResponse, CategoryNode };
