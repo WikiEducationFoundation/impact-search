@@ -110,24 +110,13 @@ const convertInitialResponseToTree = (
 
 const convertResponseToTree = (
   response: MediaWikiResponse,
-  parentID: NodeId,
-  existingNodes: INode<IFlatMetadata>[]
+  parentID: NodeId
 ): INode<IFlatMetadata>[] => {
   const pages = response.query.pages;
 
   const subcats: INode<IFlatMetadata>[] = [];
   for (const [, value] of Object.entries(pages)) {
     if (value.categoryinfo) {
-      let isDuplicateNode = false;
-      existingNodes.forEach((e) => {
-        if (e.id === value.pageid) {
-          isDuplicateNode = true;
-        }
-      });
-
-      if (isDuplicateNode) {
-        continue;
-      }
       const categoryName: string = `${
         value.title.slice(9) /* slice out "category:" prefix */
       } (${value.categoryinfo.subcats} C, ${value.categoryinfo.pages} P)`;

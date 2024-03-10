@@ -14,6 +14,8 @@ import { IFlatMetadata } from "react-accessible-treeview/dist/TreeView/utils";
 import { fetchSubcatsAndPages } from "../common/api";
 import { convertResponseToTree } from "../common/utils";
 
+const nodeIDs = new Set();
+
 export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
   const [categoryTree, setCategoryTree] = useState<INode<IFlatMetadata>[]>(
     flattenTree(treeData)
@@ -40,7 +42,6 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
 
   const fetchChildrenRecursively = async (
     nodeId: NodeId,
-    existingNodes: INode<IFlatMetadata>[],
     depth: number = 0
   ) => {
     const fetchedSubcatsAndPages = await fetchSubcatsAndPages(nodeId, true);
@@ -48,24 +49,25 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
       console.error("Invalid Response (possibly null)");
       return [];
     }
-    const parsedData = convertResponseToTree(
-      fetchedSubcatsAndPages,
-      nodeId,
-      existingNodes
-    );
-    for (const childNode of parsedData) {
-      if (childNode.isBranch) {
-        const fetchedChildren = await fetchChildrenRecursively(
-          childNode.id,
-          existingNodes.concat(parsedData),
-          depth + 1
-        );
+    const parsedData = convertResponseToTree(fetchedSubcatsAndPages, nodeId);
 
-        setCategoryTree((value) => {
-          return updateTreeData(value, childNode.id, fetchedChildren);
-        });
-        childNode.children = fetchedChildren.map((child) => child.id);
+    for (const childNode of parsedData) {
+      if (nodeIDs.has(childNode.id)) {
+        continue;
       }
+      if (!childNode.isBranch) {
+        continue;
+      }
+      nodeIDs.add(childNode.id);
+      const fetchedChildren = await fetchChildrenRecursively(
+        childNode.id,
+        depth + 1
+      );
+
+      setCategoryTree((value) => {
+        return updateTreeData(value, childNode.id, fetchedChildren);
+      });
+      childNode.children = fetchedChildren.map((child) => child.id);
     }
     return parsedData;
   };
@@ -75,10 +77,7 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
       return;
     }
 
-    const fetchedData = await fetchChildrenRecursively(
-      element.id,
-      categoryTree
-    );
+    const fetchedData = await fetchChildrenRecursively(element.id);
     return new Promise<void>((resolve) => {
       if (element.children.length > 0) {
         resolve();
@@ -105,7 +104,6 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
       setNodesAlreadyLoaded([...nodesAlreadyLoaded, loadProps.element]);
     }
   };
-
   return (
     <div>
       <div className="checkbox">
