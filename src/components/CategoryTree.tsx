@@ -14,8 +14,6 @@ import { IFlatMetadata } from "react-accessible-treeview/dist/TreeView/utils";
 import { fetchSubcatsAndPages } from "../common/api";
 import { convertResponseToTree } from "../common/utils";
 
-const nodeIDs = new Set();
-
 export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
   const [categoryTree, setCategoryTree] = useState<INode<IFlatMetadata>[]>(
     flattenTree(treeData)
@@ -24,6 +22,7 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
     INode<IFlatMetadata>[]
   >([]);
 
+  const DEPTH_LIMIT: number = 2;
   const updateTreeData = (
     currentTree: INode<IFlatMetadata>[],
     id: NodeId,
@@ -37,13 +36,24 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
       }
       return node;
     });
-    return data.concat(children);
+
+    // only add children if they are not already in the tree
+    for (const child of children) {
+      if (!data.find((el) => el.id === child.id)) {
+        data.push(child);
+      }
+    }
+
+    return data;
   };
 
   const fetchChildrenRecursively = async (
     nodeId: NodeId,
     depth: number = 0
   ) => {
+    if (depth > DEPTH_LIMIT) {
+      return [];
+    }
     const fetchedSubcatsAndPages = await fetchSubcatsAndPages(nodeId, true);
     if (!fetchedSubcatsAndPages) {
       console.error("Invalid Response (possibly null)");
@@ -52,13 +62,9 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
     const parsedData = convertResponseToTree(fetchedSubcatsAndPages, nodeId);
 
     for (const childNode of parsedData) {
-      if (nodeIDs.has(childNode.id)) {
-        continue;
-      }
       if (!childNode.isBranch) {
         continue;
       }
-      nodeIDs.add(childNode.id);
       const fetchedChildren = await fetchChildrenRecursively(
         childNode.id,
         depth + 1
