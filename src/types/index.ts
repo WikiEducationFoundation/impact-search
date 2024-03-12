@@ -1,3 +1,5 @@
+import { IFlatMetadata } from "react-accessible-treeview/dist/TreeView/utils";
+
 type SPARQLResponse = {
   head: {
     vars: string[];
@@ -46,16 +48,11 @@ type MediaWikiResponse = {
   servedby?: string;
 };
 
-type Page = {
-  id: number;
-  title: string;
-};
-
 type CategoryNode = {
   name: string;
   id: number;
   isBranch: boolean;
-  pages?: Page[];
+  metadata?: IFlatMetadata;
   children?: CategoryNode[];
   parent?: string | number;
 };

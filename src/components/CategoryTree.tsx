@@ -22,7 +22,7 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
     INode<IFlatMetadata>[]
   >([]);
 
-  const DEPTH_LIMIT: number = 2;
+  const DEPTH_LIMIT: number = 1;
   const updateTreeData = (
     currentTree: INode<IFlatMetadata>[],
     id: NodeId,
@@ -48,25 +48,25 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
   };
 
   const fetchChildrenRecursively = async (
-    nodeId: NodeId,
+    node: INode<IFlatMetadata>,
     depth: number = 0
   ) => {
     if (depth > DEPTH_LIMIT) {
       return [];
     }
-    const fetchedSubcatsAndPages = await fetchSubcatsAndPages(nodeId, true);
+    const fetchedSubcatsAndPages = await fetchSubcatsAndPages(node.id, true);
     if (!fetchedSubcatsAndPages) {
       console.error("Invalid Response (possibly null)");
       return [];
     }
-    const parsedData = convertResponseToTree(fetchedSubcatsAndPages, nodeId);
+    const parsedData = convertResponseToTree(fetchedSubcatsAndPages, node);
 
     for (const childNode of parsedData) {
       if (!childNode.isBranch) {
         continue;
       }
       const fetchedChildren = await fetchChildrenRecursively(
-        childNode.id,
+        childNode,
         depth + 1
       );
 
@@ -83,7 +83,7 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
       return;
     }
 
-    const fetchedData = await fetchChildrenRecursively(element.id);
+    const fetchedData = await fetchChildrenRecursively(element);
     return new Promise<void>((resolve) => {
       if (element.children.length > 0) {
         resolve();
@@ -110,6 +110,7 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
       setNodesAlreadyLoaded([...nodesAlreadyLoaded, loadProps.element]);
     }
   };
+  console.log(categoryTree);
   return (
     <div>
       <div className="checkbox">

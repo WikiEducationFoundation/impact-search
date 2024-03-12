@@ -1,4 +1,4 @@
-import { INode, NodeId } from "react-accessible-treeview";
+import { INode } from "react-accessible-treeview";
 import { CategoryNode, MediaWikiResponse, SPARQLResponse } from "../types";
 import { IFlatMetadata } from "react-accessible-treeview/dist/TreeView/utils";
 
@@ -73,7 +73,7 @@ const convertInitialResponseToTree = (
     name: "root",
     isBranch: true,
     id: elementId,
-    pages: [],
+    metadata: {},
     children: [],
   };
 
@@ -97,11 +97,11 @@ const convertInitialResponseToTree = (
         name: categoryName,
         id: value.pageid,
         isBranch: value.categoryinfo.subcats > 0,
-        pages: [],
+        metadata: {},
         children: [],
       });
-    } else if (rootNode.pages && !value.title.startsWith("file:")) {
-      rootNode.pages.push({ id: value.pageid, title: value.title });
+    } else if (rootNode.metadata) {
+      rootNode.metadata[value.pageid] = value.title;
     }
   }
 
@@ -110,7 +110,7 @@ const convertInitialResponseToTree = (
 
 const convertResponseToTree = (
   response: MediaWikiResponse,
-  parentID: NodeId
+  parent: INode<IFlatMetadata>
 ): INode<IFlatMetadata>[] => {
   const pages = response.query.pages;
 
@@ -125,9 +125,12 @@ const convertResponseToTree = (
         name: categoryName,
         id: value.pageid,
         isBranch: value.categoryinfo.subcats > 0,
+        metadata: {},
         children: [],
-        parent: parentID,
+        parent: parent.id,
       });
+    } else if (parent.metadata) {
+      parent.metadata[value.pageid] = value.title;
     }
   }
 
