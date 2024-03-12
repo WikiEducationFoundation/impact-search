@@ -2,6 +2,7 @@ import React, { FC, useState } from "react";
 import TreeView, {
   INode,
   ITreeViewOnLoadDataProps,
+  ITreeViewOnNodeSelectProps,
   NodeId,
   flattenTree,
 } from "react-accessible-treeview";
@@ -21,6 +22,9 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
   const [nodesAlreadyLoaded, setNodesAlreadyLoaded] = useState<
     INode<IFlatMetadata>[]
   >([]);
+  const [manuallySelectedNodes, setManuallySelectedNodes] = useState<
+    Map<NodeId, INode<IFlatMetadata>>
+  >(new Map());
 
   const DEPTH_LIMIT: number = 1;
   const updateTreeData = (
@@ -92,8 +96,25 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
       setCategoryTree((value) => {
         return updateTreeData(value, element.id, fetchedData);
       });
+
       resolve();
     });
+  };
+
+  const handleNodeSelect = (selectProps: ITreeViewOnNodeSelectProps) => {
+    selectProps.isSelected &&
+      setManuallySelectedNodes((prevSelectedMap) =>
+        new Map(prevSelectedMap).set(
+          selectProps.element.id,
+          selectProps.element
+        )
+      );
+    !selectProps.isSelected &&
+      setManuallySelectedNodes((prevSelectedMap) => {
+        const newMap = new Map(prevSelectedMap);
+        newMap.delete(selectProps.element.id);
+        return newMap;
+      });
   };
 
   const wrappedOnLoadData = async (loadProps: ITreeViewOnLoadDataProps) => {
@@ -110,7 +131,7 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
       setNodesAlreadyLoaded([...nodesAlreadyLoaded, loadProps.element]);
     }
   };
-  console.log(categoryTree);
+  console.log(manuallySelectedNodes);
   return (
     <div>
       <div className="checkbox">
@@ -122,6 +143,7 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
           propagateSelectUpwards
           togglableSelect
           onLoadData={wrappedOnLoadData}
+          onNodeSelect={handleNodeSelect}
           nodeRenderer={({
             element,
             isBranch,
