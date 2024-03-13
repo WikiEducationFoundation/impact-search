@@ -1,0 +1,27 @@
+.selected-nodes {
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-left: 20px;
+  max-width: 300px;
+  max-height: 800px;
+  h3 {
+    color: #333;
+    font-family: Arial, sans-serif;
+    margin-bottom: 16px;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  li {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 1px;
+    padding: 5px;
+    font-size: 13px;
+  }
+  overflow-y: auto;
+}

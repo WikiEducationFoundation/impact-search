@@ -14,6 +14,7 @@ import { CategoryNode } from "../types";
 import { IFlatMetadata } from "react-accessible-treeview/dist/TreeView/utils";
 import { fetchSubcatsAndPages } from "../common/api";
 import { convertResponseToTree } from "../common/utils";
+import SelectedNodesDisplay from "./SelectedNodesDisplay";
 
 export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
   const [categoryTree, setCategoryTree] = useState<INode<IFlatMetadata>[]>(
@@ -131,9 +132,8 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
       setNodesAlreadyLoaded([...nodesAlreadyLoaded, loadProps.element]);
     }
   };
-  console.log(manuallySelectedNodes);
   return (
-    <div>
+    <div className="category-tree-container">
       <div className="checkbox">
         <TreeView
           data={categoryTree}
@@ -143,7 +143,7 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
           propagateSelectUpwards
           togglableSelect
           onLoadData={wrappedOnLoadData}
-          onNodeSelect={handleNodeSelect}
+          onSelect={handleNodeSelect}
           nodeRenderer={({
             element,
             isBranch,
@@ -186,6 +186,7 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
           }}
         />
       </div>
+      <SelectedNodesDisplay selectedNodes={manuallySelectedNodes} />
     </div>
   );
 }
