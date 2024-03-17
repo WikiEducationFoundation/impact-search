@@ -1,13 +1,19 @@
 import { SPARQLResponse } from "../types";
-import { convertArticlesToCSV, downloadAsCSV } from "../common/utils";
+import { downloadAsCSV } from "../common/utils";
+import { INode } from "react-accessible-treeview";
+import { IFlatMetadata } from "react-accessible-treeview/dist/TreeView/utils";
 
 export default function CSVButton({
   articles,
+  csvConvert,
 }: {
-  articles: SPARQLResponse["results"]["bindings"];
+  articles:
+    | SPARQLResponse["results"]["bindings"]
+    | IterableIterator<INode<IFlatMetadata>>;
+  csvConvert: (articles: unknown) => string;
 }) {
   const handleExportCSV = () => {
-    const csvContent = convertArticlesToCSV(articles);
+    const csvContent = csvConvert(articles);
     downloadAsCSV(csvContent);
   };
   return (

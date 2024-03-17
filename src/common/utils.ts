@@ -42,14 +42,25 @@ function buildWikidataQuery(
   return encodeURIComponent(query);
 }
 
-function convertArticlesToCSV(
+function convertSPARQLArticlesToCSV(
   articles: SPARQLResponse["results"]["bindings"]
 ): string {
   let csvContent = "data:text/csv;charset=utf-8,Articles\n";
 
   articles.forEach((item) => {
-    csvContent += `${item.personLabel.value}\n`;
+    csvContent += `"${item.personLabel.value}"\n`;
   });
+
+  return csvContent;
+}
+
+function convertCategoryArticlesToCSV(
+  articles: IterableIterator<INode<IFlatMetadata>>
+): string {
+  let csvContent = "data:text/csv;charset=utf-8,Articles\n";
+  for (const article of articles) {
+    csvContent += `"${article.metadata.rawName}"\n`;
+  }
 
   return csvContent;
 }
@@ -97,7 +108,7 @@ const convertInitialResponseToTree = (
         name: categoryName,
         id: value.pageid,
         isBranch: value.categoryinfo.subcats > 0,
-        metadata: {},
+        metadata: { rawName: value.title.slice(9) },
         children: [],
       });
     } else if (rootNode.metadata) {
@@ -125,7 +136,7 @@ const convertResponseToTree = (
         name: categoryName,
         id: value.pageid,
         isBranch: value.categoryinfo.subcats > 0,
-        metadata: {},
+        metadata: { rawName: value.title.slice(9) },
         children: [],
         parent: parent.id,
       });
@@ -139,7 +150,8 @@ const convertResponseToTree = (
 
 export {
   buildWikidataQuery,
-  convertArticlesToCSV,
+  convertSPARQLArticlesToCSV,
+  convertCategoryArticlesToCSV,
   downloadAsCSV,
   convertInitialResponseToTree,
   convertResponseToTree,

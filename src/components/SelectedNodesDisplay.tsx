@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "./SelectedNodesDisplay.scss";
 import { INode, NodeId } from "react-accessible-treeview";
 import { IFlatMetadata } from "react-accessible-treeview/dist/TreeView/utils";
+import CSVButton from "./CSVButton";
+import { convertCategoryArticlesToCSV } from "../common/utils";
 
 export default function SelectedNodesDisplay({
   selectedNodes,
@@ -21,6 +23,10 @@ export default function SelectedNodesDisplay({
   }, [selectedNodes]);
   return (
     <div className="selected-nodes">
+      <CSVButton
+        articles={selectedNodes.values()}
+        csvConvert={convertCategoryArticlesToCSV}
+      />
       <h3>Selected Articles</h3>
       {articlesCount} articles from {selectedNodes.size} categories
       <ul>

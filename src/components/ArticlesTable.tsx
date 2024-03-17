@@ -1,3 +1,4 @@
+import { convertSPARQLArticlesToCSV } from "../common/utils";
 import { SPARQLResponse } from "../types";
 import "./ArticlesTable.scss";
 import CSVButton from "./CSVButton";
@@ -9,7 +10,7 @@ export default function ArticlesTable({
 }) {
   return (
     <>
-      <CSVButton articles={articles} />
+      <CSVButton articles={articles} csvConvert={convertSPARQLArticlesToCSV} />
       <table className="articles-table">
         <thead>
           <tr>
