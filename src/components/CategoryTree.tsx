@@ -56,7 +56,7 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
     node: INode<IFlatMetadata>,
     depth: number = 0
   ) => {
-    if (depth > DEPTH_LIMIT) {
+    if (depth > DEPTH_LIMIT && node.isBranch) {
       return [];
     }
     const fetchedSubcatsAndPages = await fetchSubcatsAndPages(node.id, true);
@@ -65,15 +65,15 @@ export default function CategoryTree({ treeData }: { treeData: CategoryNode }) {
       return [];
     }
     const parsedData = convertResponseToTree(fetchedSubcatsAndPages, node);
-
     for (const childNode of parsedData) {
-      if (!childNode.isBranch) {
-        continue;
-      }
       const fetchedChildren = await fetchChildrenRecursively(
         childNode,
         depth + 1
       );
+
+      if (!childNode.isBranch) {
+        continue;
+      }
 
       setCategoryTree((value) => {
         return updateTreeData(value, childNode.id, fetchedChildren);

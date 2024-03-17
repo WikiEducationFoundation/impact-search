@@ -1,11 +1,11 @@
 .selected-nodes {
+  flex: 1;
   background: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin-left: 20px;
-  max-width: 300px;
-  max-height: 800px;
+  max-height: 700px;
   h3 {
     color: #333;
     font-family: Arial, sans-serif;
@@ -21,7 +21,7 @@
     border-radius: 4px;
     margin-bottom: 1px;
     padding: 5px;
-    font-size: 13px;
+    font-size: 15px;
   }
   overflow-y: auto;
 }

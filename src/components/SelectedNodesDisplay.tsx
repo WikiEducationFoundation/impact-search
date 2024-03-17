@@ -27,7 +27,6 @@ export default function SelectedNodesDisplay({
         {[...selectedNodes.values()].map((node) => {
           return node.metadata
             ? Object.entries(node.metadata).map(([key, value]) => {
-                console.log(key, value); // Log key-value pair to the console
                 return <li key={key}>{`${value}`}</li>;
               })
             : null;

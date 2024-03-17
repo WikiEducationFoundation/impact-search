@@ -1,7 +1,9 @@
 .category-tree-container {
   display: flex;
   justify-content: space-between;
+  margin-top: 20px;
   .checkbox {
+    flex: 1;
     font-size: 16px;
     user-select: none;
     min-height: 320px;
