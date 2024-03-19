@@ -55,11 +55,13 @@ function convertSPARQLArticlesToCSV(
 }
 
 function convertCategoryArticlesToCSV(
-  articles: IterableIterator<INode<IFlatMetadata>>
+  categories: IterableIterator<INode<IFlatMetadata>>
 ): string {
   let csvContent = "data:text/csv;charset=utf-8,Articles\n";
-  for (const article of articles) {
-    csvContent += `"${article.metadata.rawName}"\n`;
+  for (const category of categories) {
+    for (const article of Object.values(category.metadata)) {
+      csvContent += `"${article}"\n`;
+    }
   }
 
   return csvContent;
@@ -108,7 +110,7 @@ const convertInitialResponseToTree = (
         name: categoryName,
         id: value.pageid,
         isBranch: value.categoryinfo.subcats > 0,
-        metadata: { rawName: value.title.slice(9) },
+        metadata: {},
         children: [],
       });
     } else if (rootNode.metadata) {
@@ -136,7 +138,7 @@ const convertResponseToTree = (
         name: categoryName,
         id: value.pageid,
         isBranch: value.categoryinfo.subcats > 0,
-        metadata: { rawName: value.title.slice(9) },
+        metadata: {},
         children: [],
         parent: parent.id,
       });
