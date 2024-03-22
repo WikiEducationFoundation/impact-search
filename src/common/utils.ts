@@ -59,7 +59,8 @@ function convertCategoryArticlesToCSV(
 ): string {
   let csvContent = "data:text/csv;charset=utf-8,Articles\n";
   for (const category of categories) {
-    for (const article of Object.values(category.metadata)) {
+    const metadata = category.metadata || {};
+    for (const article of Object.values(metadata)) {
       csvContent += `"${article}"\n`;
     }
   }
